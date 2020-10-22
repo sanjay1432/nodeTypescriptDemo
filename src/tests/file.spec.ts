@@ -1,29 +1,23 @@
 import fs from "fs";
 import path from "path";
 import ENV from "../utils/env";
-// import FormData from "form-data";
 import Axios from "axios";
-(global as any).FormData = FormData;
+
+let fileId;
 describe("File Upload test", () => {
   test("should upload the file", async () => {
-    const filename = await uploadFile("Alfred-1.png", "file");
-    // // user = res;
-    // expect(filename).toBeDefined();
-    // await expect(uploadFile("Alfred-1.png", "file")).rejects.toThrowError(`${user._id}12 is not valid id!`);
-    await expect(filename).resolves.toBeDefined();
+    await expect(uploadFile("Alfred-1.png", "file")).resolves.toEqual(200);
+  });
+  afterAll(async () => {
+    await fs.unlinkSync(path.join(__dirname, `../assets/uploads/` + fileId));
   });
 });
 async function uploadFile(filename, formdataname) {
-  const f = fs.readFileSync(path.join(__dirname, filename));
-  const b = Buffer.from(f);
   const data = new FormData();
-  data.append("file", JSON.stringify(b));
-  try {
-    const res = await Axios.post(`http://localhost:${ENV.PORT}/api/files/uploadFile`, data, {
-      headers: { "Content-Type": "multipart/form-data" }
-    });
-    return res;
-  } catch (err) {
-    return err;
-  }
+  data.append(formdataname, new Blob([fs.readFileSync(path.join(__dirname, filename))]));
+  const res = await Axios.post(`http://localhost:${ENV.PORT}/api/files/uploadFile`, data, {
+    headers: { "Content-Type": "multipart/form-data" }
+  });
+  fileId = res.data;
+  return res.status;
 }

@@ -18,9 +18,17 @@ const swaggerOptions = {
 class TsoaServer {
   app: express.Express;
   server = createServer();
-
+  whitelist = [...ENV.CORS_ORIGINS, "http://localhost"];
+  corsOptions: CorsOptions = {
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (this.whitelist.indexOf(origin) !== -1) callback(null, true);
+      else callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+  };
   initExpress() {
     this.app = express()
+      .use(cors(this.corsOptions))
       .use("/docs", swaggerUi.serve, swaggerUi.setup(null, { swaggerOptions }))
       .use("/swagger.json", (req, res) => {
         res.sendFile(path.join(__dirname, "/swagger.json"));

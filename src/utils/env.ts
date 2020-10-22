@@ -11,7 +11,8 @@ const ENV = Object.freeze({
   DB_DBNAME: env.DB_DBNAME,
   PORT: env.PORT,
   SALT_WORK_FACTOR: parseInt(env.SALT_WORK_FACTOR) ?? 10,
-  JWT_SECRET: process.env.JWT_SECRET
+  JWT_SECRET: process.env.JWT_SECRET,
+  CORS_ORIGINS: env.CORS_ORIGINS?.split(",") ?? []
 });
 
 export default ENV;
