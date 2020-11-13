@@ -6,11 +6,21 @@ import ENV from "../utils/env";
 interface UserDoc extends User, Document {}
 
 const UserSchema: Schema = new Schema({
-  email: String,
-  username: String,
-  phoneNumbers: String,
+  email: {
+    type: String,
+    unique: true // `email` must be unique
+  },
+  username: {
+    type: String,
+    unique: true // `username` must be unique
+  },
+  phoneNumbers: {
+    type: String,
+    unique: true // `phoneNumbers` must be unique
+  },
   password: String,
-  dob: String
+  dob: String,
+  picture: String
 });
 
 UserSchema.pre<UserDoc>("save", function(next) {

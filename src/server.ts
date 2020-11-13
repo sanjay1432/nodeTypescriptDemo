@@ -36,9 +36,8 @@ class TsoaServer {
       .use(bodyParser.json())
       .use(bodyParser.urlencoded({ extended: true }));
     RegisterRoutes(this.app);
-
     this.app.use(this.expressErrorHandler);
-
+    this.app.use("/images", express.static(path.join(__dirname, "../src/assets/uploads/")));
     this.server.on("request", this.app);
   }
 

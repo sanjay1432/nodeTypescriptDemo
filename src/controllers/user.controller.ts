@@ -31,10 +31,10 @@ export class UserController extends Controller {
    *
    * @param info
    */
-
-  @Get("/{userId}")
-  public async getUser(@Path() userId): Promise<User> {
-    return this.userService.getOne(userId);
+  @Security("bearer")
+  @Get("/")
+  public async getUser(@Request() req): Promise<User> {
+    return req.user;
   }
 
   @Security("bearer")
@@ -47,6 +47,13 @@ export class UserController extends Controller {
   async createUser(@Body() req: User): Promise<User> {
     return this.userService.create(req);
   }
+  /**
+   * Authentication user api.
+   *
+   * Id can consist any one of valid/registered email-Id or username or phone.
+   *
+   * @param info
+   */
 
   @Post("/login")
   async login(@Body() req: loginUser): Promise<any> {
@@ -54,7 +61,7 @@ export class UserController extends Controller {
   }
   @Put("/{userId}")
   async updateUser(@Path() userId, @Body() req: User): Promise<User> {
-    return this.userService.update(userId, req);
+    return this.userService.update(userId, req, "");
   }
 
   @Delete("/{userId}")
