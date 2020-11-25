@@ -8,7 +8,10 @@ export enum SecurityName {
 }
 
 export const signToken = info => {
-  return jwt.sign(info, ENV.JWT_SECRET, { algorithm: "HS256", expiresIn: "60s" });
+  return jwt.sign(info, ENV.JWT_SECRET, { algorithm: "HS256", expiresIn: ENV.JWT_EXPIRY_TIME });
+};
+export const signEmailToken = info => {
+  return jwt.sign(info, ENV.JWT_EMAIL_SECRET, { algorithm: "HS256", expiresIn: ENV.JWT_EMAIL_EXPIRY_TIME });
 };
 export async function expressAuthentication(request, securityName, _scopes): Promise<any> {
   switch (securityName) {
@@ -31,7 +34,10 @@ export function validateToken(token: string) {
   const tokenInfo = jwt.verify(token, ENV.JWT_SECRET) as TokenContent;
   return tokenInfo;
 }
-
+export function validateEmailToken(token: string) {
+  const tokenInfo = jwt.verify(token, ENV.JWT_EMAIL_SECRET) as TokenContent;
+  return tokenInfo;
+}
 export interface TokenContent {
   _id: string;
 }

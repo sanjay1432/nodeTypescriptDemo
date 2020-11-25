@@ -12,7 +12,14 @@ const ENV = Object.freeze({
   PORT: env.PORT,
   SALT_WORK_FACTOR: parseInt(env.SALT_WORK_FACTOR) ?? 10,
   JWT_SECRET: process.env.JWT_SECRET,
-  CORS_ORIGINS: env.CORS_ORIGINS?.split(",") ?? []
+  JWT_EXPIRY_TIME: process.env.JWT_EXPIRY_TIME,
+  JWT_EMAIL_SECRET: process.env.JWT_EMAIL_SECRET,
+  JWT_EMAIL_EXPIRY_TIME: process.env.JWT_EMAIL_EXPIRY_TIME,
+  CORS_ORIGINS: env.CORS_ORIGINS?.split(",") ?? [],
+  APP_ADMIN_UN: env.ADMIN_UN,
+  APP_ADMIN_PW: env.ADMIN_PW,
+  APP_MAIL_USER: env.MAIL_USER,
+  APP_MAIL_PWD: env.MAIL_PWD
 });
 
 export default ENV;

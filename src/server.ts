@@ -9,6 +9,9 @@ import cors, { CorsOptions, CorsOptionsDelegate } from "cors";
 import { createServer } from "http";
 import { connect } from "./config/db";
 import logger from "./utils/logger";
+import { EsClient } from "./config/es";
+import { Seed } from "./config/seed";
+
 const swaggerOptions = {
   url: `/swagger.json`,
   docExpansion: "list",
@@ -19,6 +22,8 @@ class TsoaServer {
   app: express.Express;
   server = createServer();
   whitelist = [...ENV.CORS_ORIGINS, "http://localhost"];
+  es = new EsClient();
+  seed = new Seed();
   corsOptions: CorsOptions = {
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
@@ -52,6 +57,8 @@ class TsoaServer {
   async init() {
     await connect();
     this.initExpress();
+    this.es.checkEsConnection();
+    await this.seed.createUser();
     this.server.listen(ENV.PORT, () => {
       logger.info(`Server listening on port ${ENV.PORT}`);
     });

@@ -5,24 +5,52 @@ import ENV from "../utils/env";
 
 interface UserDoc extends User, Document {}
 
-const UserSchema: Schema = new Schema({
-  email: {
-    type: String,
-    unique: true // `email` must be unique
+const UserSchema: Schema = new Schema(
+  {
+    email: {
+      id: {
+        type: String,
+        unique: true // `phoneNumber` must be unique
+      },
+      verified: { type: Boolean, default: false }
+    },
+    fullname: String,
+    username: {
+      type: String,
+      unique: true // `username` must be unique
+    },
+    phone: {
+      number: {
+        type: String,
+        index: {
+          unique: true,
+          partialFilterExpression: { number: { $type: "string" } }
+        }
+      },
+      verified: { type: Boolean, default: false }
+    },
+    password: String,
+    bio: { type: String, default: "Hey There!" },
+    dob: String,
+    picture: String,
+    active: { type: Boolean, default: false },
+    role: { type: String, default: "user" },
+    location: {
+      type: {
+        type: String, // Don't do `{ location: { type: String } }`
+        enum: ["Point"] // 'location.type' must be 'Point'
+      },
+      name: String,
+      coordinates: {
+        type: [Number]
+      }
+    },
+    professionalTitle: String
   },
-  username: {
-    type: String,
-    unique: true // `username` must be unique
-  },
-  phoneNumbers: {
-    type: String,
-    unique: true // `phoneNumbers` must be unique
-  },
-  password: String,
-  dob: String,
-  picture: String
-});
+  { timestamps: true }
+);
 
+UserSchema.index({ title: 1, email: 1, fullname: 1 }, { unique: true });
 UserSchema.pre<UserDoc>("save", function(next) {
   const user = this;
   // only hash the password if it has been modified (or is new)

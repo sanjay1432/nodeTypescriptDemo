@@ -9,7 +9,7 @@ const userService = new UserService();
 const newUser: User = {
   email: "test@test.com",
   username: "test",
-  phoneNumbers: "03334445",
+  phoneNumber: "03334445",
   password: "123456",
   dob: "20/04/1991"
 };
@@ -41,7 +41,7 @@ describe("User Model Test", () => {
   describe("User auth test", () => {
     test("should return token on authentication", async () => {
       const user = {
-        username: "test",
+        id: "test",
         password: "123456"
       };
       const token = await userService.authenticate(user);
@@ -50,19 +50,19 @@ describe("User Model Test", () => {
 
     test("should throw error for wrong username", async () => {
       const user = {
-        username: "test1",
+        id: "test1",
         password: "123456"
       };
-      await expect(userService.authenticate(user)).rejects.toThrowError(`${user.username} doesn't have account yet!`);
+      await expect(userService.authenticate(user)).rejects.toThrowError(`${user.id} doesn't have account yet!`);
     });
 
     test("should throw error for wrong password", async () => {
       const user = {
-        username: "test",
+        id: "test",
         password: "12345"
       };
       await expect(userService.authenticate(user)).rejects.toThrowError(
-        `Given password is not available for ${user.username}`
+        `Given password is not available for ${user.id}`
       );
     });
   });
@@ -70,10 +70,10 @@ describe("User Model Test", () => {
   describe("User CRUD test", () => {
     test("should update the user phone number", async () => {
       const payload = {
-        phoneNumbers: "03334446"
+        phoneNumber: "03334446"
       };
       const res = await userService.update(user._id, payload);
-      expect(res.phoneNumbers).toEqual("03334446");
+      expect(res.phoneNumber).toEqual("03334446");
     });
 
     test("should get the user from id", async () => {

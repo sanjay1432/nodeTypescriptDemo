@@ -4,6 +4,8 @@ import express from "express";
 import { UserService } from "../services/user.service";
 import { UserRequest } from "../interfaces/user";
 import Mongoose from "mongoose";
+import fs from "fs";
+import path from "path";
 @Tags("File Module")
 @Route("files")
 export class FilesController {
@@ -18,6 +20,13 @@ export class FilesController {
       const uploadedFile = await this.fileService.handleFile(request);
       // file will be in request.file, it is a buffer
       const { user } = request;
+      //Check if user already have picture available
+      let filepath = path.join(__dirname, "../../src/assets/uploads/");
+      filepath = filepath + user.picture;
+      if (fs.existsSync(filepath)) {
+        //file exists
+        fs.unlinkSync(filepath);
+      }
       //update the file in user schema
       await this.userService.update(user._id, { picture: uploadedFile }, session);
       // commit the changes if everything was successful

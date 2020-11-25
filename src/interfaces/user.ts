@@ -1,13 +1,31 @@
 import { Request } from "express";
+type Optional<T> = { [P in keyof T]?: T[P] };
+
+interface Address {
+  type: string;
+  name: string;
+  coordinates: string[];
+}
+
+interface Phone {
+  number: string;
+}
+
+interface Email {
+  id: string;
+}
 export interface User {
   /**
    * user valid email need to be provided
    */
-  email: string;
+  email: Email;
+  fullname?: string;
   username: string;
-  phoneNumbers?: string;
+  phone?: Phone;
   password: string;
   dob?: string;
+  location?: Address;
+  professionalTitle?: String;
 }
 
 // export interface loginUser extends Pick<User, "username" | "password"> {}
@@ -16,5 +34,6 @@ export interface loginUser {
   password: string;
 }
 export interface UserRequest extends Request {
-  user?: User & { _id: string };
+  user?: User & { _id: string; picture?: string };
 }
+export type UpdateUser = Optional<User>;
