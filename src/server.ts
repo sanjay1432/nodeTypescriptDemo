@@ -11,7 +11,7 @@ import { connect } from "./config/db";
 import logger from "./utils/logger";
 import { EsClient } from "./config/es";
 import { Seed } from "./config/seed";
-
+import ws from "ws";
 const swaggerOptions = {
   url: `/swagger.json`,
   docExpansion: "list",
@@ -19,6 +19,7 @@ const swaggerOptions = {
 };
 
 class TsoaServer {
+  wss: ws.Server;
   app: express.Express;
   server = createServer();
   whitelist = [...ENV.CORS_ORIGINS, "http://localhost"];
@@ -31,6 +32,13 @@ class TsoaServer {
       else callback(new Error(`Origin ${origin} not allowed by CORS`));
     }
   };
+
+  /**
+   * Initialise the websocket server
+   */
+  initWss() {
+    this.wss = new ws.Server({ clientTracking: true, server: this.server });
+  }
   initExpress() {
     this.app = express()
       .use(cors(this.corsOptions))
@@ -54,14 +62,28 @@ class TsoaServer {
     }
   }
 
+  /**
+   * Setup server to close connections from client that are not responding
+   */
+  clientPingPong() {
+    this.wss.on("connection", (client, req) => {
+      console.log("Connextcionsss");
+      client.send("ok connected");
+      client.on("close", () => {
+        console.log("Connection is closed");
+      });
+    });
+  }
   async init() {
     await connect();
+    this.initWss();
     this.initExpress();
     this.es.checkEsConnection();
     await this.seed.createUser();
     this.server.listen(ENV.PORT, () => {
       logger.info(`Server listening on port ${ENV.PORT}`);
     });
+    this.clientPingPong();
   }
 }
 
