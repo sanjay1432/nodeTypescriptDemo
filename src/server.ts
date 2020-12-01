@@ -67,10 +67,19 @@ class TsoaServer {
    */
   clientPingPong() {
     this.wss.on("connection", (client, req) => {
-      console.log("Connextcionsss");
+      client['userId'] =
+        console.log("Connextcionsss");
       client.send("ok connected");
       client.on("close", () => {
         console.log("Connection is closed");
+      });
+      client.on("message", (data) => {
+        console.log(data);
+        if (data.code === 0) {
+          client.userId = data.data
+        } else {
+          // client[]
+        }
       });
     });
   }
